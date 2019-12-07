@@ -10,7 +10,23 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      // 一旦遇到路径 '/api' 匹配到这条代理规则
+            // 服务器识别你的客户端信息 请求头会自动携带 user-agent: 客户端
+            '/api': {
+            //     // 目标服务器地址
+                target: 'http://m.kugou.com',
+                secure: false, // https: true  http:// false
+                changeOrigin: true, // 当前是跨域访问  要设置
+                pathRewrite: { // 路径重写 把api 去掉
+                    '^/api': ''
+                },
+            //     // 设置请求头信息  
+            //     headers: {
+            //         'User-Agent': 'Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Mobile Safari/537.36'
+            //     }
+            }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
