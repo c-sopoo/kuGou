@@ -34,7 +34,7 @@ export default {
 <style lang="less" scoped>
     .singerlist {
         /deep/.mint-cell-wrapper {
-            padding: 10px
+            padding: 6px
         }
     }
 </style>

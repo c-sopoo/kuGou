@@ -3,7 +3,7 @@
      <!-- 排行榜中的组件 -->
      <mt-cell
         :title="item.specialname|| item.rankname"
-        to=""
+        :to="{name:Path,params:{rankid: ($route.path=='/rank')?item.rankid :item.specialid}}"
         is-link
         class="cell"
         v-for="item in lists"
@@ -26,6 +26,28 @@ Vue.component(Cell.name, Cell);
 export default {
   props: {
     "lists": Array
+  },
+  data() {
+    return {
+      Path:'RankInfo',
+      Params:''
+    }
+  },
+  watch: {
+    $route: {
+      handler() {
+        // console.log(this.$route)
+        if(this.$route.path == '/rank') {
+          this.Path = 'RankInfo'
+          // this.Params = item.rankid
+        }else {
+          this.Path = 'Plistlist'
+          // this.Params = item.specialid
+        }
+        
+      },
+      immediate: true
+    }
   },
   
 }

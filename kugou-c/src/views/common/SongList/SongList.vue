@@ -51,7 +51,5 @@ export default {
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .songlists .mint-cell-wrapper{
-    /* border-bottom: 1px solid  */
-  }
+  
 </style>

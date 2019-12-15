@@ -30,6 +30,7 @@ export default {
    .navSearch .mint-header {
       background-color: #fff;
       color:#333;
+      height: 50px;
     }
     .navSearch   .icon {
         color: #999;

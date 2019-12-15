@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="search">
         搜索
     </div>
 </template>
@@ -10,6 +10,10 @@ export default {
 }
 </script>
 
-<style lang="">
-    
+<style lang="less" scope>
+    .search {
+        /deep/.mint-header {
+            height: 53px;
+        }
+    }
 </style>

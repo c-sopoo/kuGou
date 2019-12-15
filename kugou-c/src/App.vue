@@ -8,19 +8,27 @@
         <mt-button icon="search" slot="right" @click.native="gotoSearch"></mt-button>
       </mt-header>
 
-      <!-- 导航栏,路由视图 -->
-      <router-view name='navBar'></router-view>
     </div>
+      <!-- 导航栏,路由视图 -->
+      <div class="nav">
+        <router-view name='navBar'></router-view>
+      </div>
+      
 
     <div class="container">
       <router-view></router-view>
     </div>
-
+    <!-- 播放器组件 -->
+    
+      <player></player>
+    
+    
   </div>
 </template>
 
 <script>
 import Vue from 'vue'
+import Player from '@/components/Player/Player'
 import { Header,Button } from 'mint-ui';
 Vue.component(Header.name, Header);
 Vue.component(Button.name, Button);
@@ -33,13 +41,16 @@ export default {
       })
     }
   },
+  components: {
+    Player
+  }
 }
 </script>
 
 <style lang='less' scoped>
   #app{
     // height: 1000px;
-    background: #fff
+    // background: #fff
   }
   .header { 
     position: fixed;
@@ -55,7 +66,7 @@ export default {
       }
     }
     /deep/.top  {
-       .mint-header-title{
+      .mint-header-title{
         border: 1px solid #fff;
         height: 1.625rem;
         width: 5.125rem;
@@ -69,7 +80,15 @@ export default {
     
   }
   .container {
-    margin-top: 92px;
+    margin-top: 3px;
+  }
+  .nav {
+    margin-top: 40px;
+  }
+  .playerbox {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
   }
   
 </style>

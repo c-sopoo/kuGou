@@ -7,6 +7,9 @@ import Search from '@/views/Search/Search'
 import NavSearch from '@/components/Nav/NavSearch'
 import SingerList from '@/views/Singer/SingerList/SingerList'
 import SingerInfo from '@/views/Singer/SingerInfo/SingerInfo'
+import RankInfo from '@/views/Rank/RankInfo/RankInfo'
+import Plistlist from '@/views/Plist/Plistlist/Plistlist'
+
 
 // 获取当前的push方法
 const originalPush = Router.prototype.push
@@ -41,6 +44,20 @@ export default new Router({
       components: {
         default: SingerInfo,
         navBar: NavSearch
+      }
+    },{
+      path:'/rank/info/:rankid',
+      name:'RankInfo',
+      components: {
+        default: RankInfo,
+        // navBar: NavSearch
+      }
+    },{
+      path:'/plist/list/:rankid',
+      name:'Plistlist',
+      components: {
+        default: Plistlist,
+        // navBar: NavSearch
       }
     }
   ]
