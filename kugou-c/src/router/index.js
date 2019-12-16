@@ -50,10 +50,22 @@ export default new Router({
       name:'RankInfo',
       components: {
         default: RankInfo,
+<<<<<<< HEAD
         navBar: NavSearch
       }
     },{
       path:'/plist/list/:rankid'
+=======
+        // navBar: NavSearch
+      }
+    },{
+      path:'/plist/list/:rankid',
+      name:'Plistlist',
+      components: {
+        default: Plistlist,
+        // navBar: NavSearch
+      }
+>>>>>>> 31f7cb3795f307f9e14a5fd0a8e0a084f8016deb
     }
   ]
 })

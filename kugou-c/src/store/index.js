@@ -15,6 +15,13 @@ let store = new Vuex.Store({
           updateSongLists (state, { songlists }) {
             state.songlists = songlists
           }
+    },
+    getters: {
+      //计算出当前hash所在的索引
+      index(state) {
+        return state.songlists.findIndex(item => item.hash == state.hash)
+
+      }
     }
 })
 export default store
