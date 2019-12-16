@@ -3,7 +3,7 @@
      <!-- 排行榜中的组件 -->
      <mt-cell
         :title="item.specialname|| item.rankname"
-        to=""
+        :to="{name:'RankInfo' || 'Plistlist',params:{rankid: item.rankid || item.specialid}}"
         is-link
         class="cell"
         v-for="item in lists"
