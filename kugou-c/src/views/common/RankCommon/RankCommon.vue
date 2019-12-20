@@ -36,7 +36,7 @@ export default {
   watch: {
     $route: {
       handler() {
-        // console.log(this.$route)
+        console.log(this.$route)
         if(this.$route.path == '/rank') {
           this.Path = 'RankInfo'
           // this.Params = item.rankid

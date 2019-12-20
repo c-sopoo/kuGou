@@ -4,34 +4,41 @@
         <div  style="height: 60px" v-if='bottom == "0"'></div>
 
         <!-- 歌手封面 -->
-        <div class="singer-page" :style="{visibility: flag? 'hidden':'visible'}">
-            <p><span class="iconfont icon-zuo" @click='goBack'></span>{{ flieSongName}}</p>
-            <!-- 图片 -->
-            <div class="singer-img">
-                <img :src="singerPic" alt="">
-            </div>
-            <!-- 歌词 -->
-            <div class="lrc-box">
-                <p></p>
-            </div>
-            <!-- 进度条 -->
-            <div class="progress">
-                <span>00:00</span>
-                <div class="progress-wrap">
-                    <div class="load-progress"></div>
-                    <div class="time-progress">
-                        <span></span>
+        <div class="singer-page" :style="{visibility: flag? 'hidden':'visible','background-image': 'url('+singerPic+')' }">
+            <div class="fun-box">
+                    <div class="con-group">
+                    <p><span class="iconfont icon-zuo" @click='goBack'></span>{{ flieSongName}}</p>
+                    <!-- 图片 -->
+                    <div class="singer-img">
+                        <img :src="singerPic" alt="">
+                    </div>
+                    <!-- 歌词 -->
+                    <div class="lrc-box">
+                        <p></p>
+                    </div>
+                    <!-- 进度条 -->
+                    <div class="progress">
+                        <span>00:00</span>
+                        <div class="progress-wrap">
+                            <div class="load-progress"></div>
+                            <div class="time-progress">
+                                <span></span>
+                            </div>
+                        </div>
+                        <span>{{songMin}}:{{songSec}}</span>
+                    </div>
+                    <!-- 控制按钮 -->
+                    <div class="control-box">
+                        <span class="iconfont icon-shangyishou1" @click='prev'></span>
+                        <span class="iconfont" :class='isPlay? "icon-zanting2": "icon-bofang"' @click='playOrPause'></span>
+                        <span class="iconfont icon-xiayishou1" @click='next'></span>
                     </div>
                 </div>
-                <span>00:00</span>
             </div>
-            <!-- 控制按钮 -->
-            <div class="control-box">
-                <span class="iconfont icon-shangyishou1" @click='prev'></span>
-                <span class="iconfont" :class='isPlay? "icon-zanting2": "icon-bofang"' @click='playOrPause'></span>
-                <span class="iconfont icon-xiayishou1" @click='next'></span>
-            </div>
+            
+           
         </div>
+
         <!-- 控制器 -->
         <div class="player" :style="{bottom:bottom}" @click='pageShow'>
             <img :src="singerPic" alt="">
@@ -66,12 +73,19 @@ export default {
             flieSongName:'',
             isPlay: false,
             bottom: '-5rem',
-            flag:false
+            flag:true,
+            timeLength:''
         }
     },
     computed: {
         ...mapState(['songlists','hash']),
-        ...mapGetters(['index'])
+        ...mapGetters(['index']),
+        songMin() {
+            return Number.parseInt(this.timeLength/60) 
+        },
+        songSec() {
+            return Number.parseInt(this.timeLength%60)
+        }
     },
     watch: {
         hash: async function() {
@@ -99,6 +113,7 @@ export default {
             this.songName = data.songName
             this.fileName = data.fileName
             this.audioUrl = data.url
+            this.timeLength = data.timeLength
 
             let str = data.fileName.replace(/\s*/g,'')//去空格
             let index = str.indexOf('-')
@@ -114,7 +129,8 @@ export default {
                         params: {
                             cmd:100,
                             keyword:this.fileName,
-                            hash: this.hash
+                            hash: this.hash,
+                            timelength:this.timeLength*1000
                         }
                     })
         
@@ -123,7 +139,7 @@ export default {
         // 虽然你已经把音频信息放置到audio的src中啦 但是音乐需要时间加载
         // 音频还没有加载完毕 你直接调用play无法播放
         // 有一个事件可以判断当前音频加载完毕了 loadeddata
-
+        // console.log('----')
         // console.log(this.$refs.audio)//$refs ref 获取DOM元素
         let this_ = this
         this.$refs.audio.addEventListener('loadeddata', function() {
@@ -194,13 +210,41 @@ export default {
     position:  fixed;
     top: 2.4375rem;
     z-index: 10;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    
+    &::after {
+        content: '';
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        left: 0;top: 0;
+        background: inherit;
+        // opacity: .9;
+        filter: blur(12px);
+        z-index: 2;
+
+    }
+    .fun-box {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        background: rgba(0,0,0,0.6);
+        z-index: 5;
+
+    }
+    .con-group {
+        z-index: 10;
+        position: absolute;
+    }
     p {
         height: 2.625rem;
         text-align: center;
         line-height: 2.625rem;
         color: #fff;
         position: relative;
-        font-size: 1.25rem;
+        font-size: 1rem;
         span {
             position: absolute;
             left: .5rem;

@@ -1,12 +1,8 @@
 <template>
     <div class="rankinfo">
-<<<<<<< HEAD
-        <div >
-=======
         <div class="bg">
             <img :src="imgUrl | filterImg" alt="">
             <p><span class="iconfont icon-zuo" @click='goBack'></span>{{ specialname}}</p>
->>>>>>> 31f7cb3795f307f9e14a5fd0a8e0a084f8016deb
         </div>
         <song-list :songList='songs'></song-list>
     </div>
@@ -21,32 +17,17 @@ export default {
         return {
             songs:[],
             imgUrl:'',
-<<<<<<< HEAD
-            singerName:''
-=======
             specialname:'' 
->>>>>>> 31f7cb3795f307f9e14a5fd0a8e0a084f8016deb
         }
     },
     components: {
         SongList
     },
-<<<<<<< HEAD
-    computed: {
-        
+    watch: {
+        $route() {
+            console.log(this.$route)
+        }
     },
-    async created() {
-        let {data} = await this.$axios.get(`plist/index/${this.$route.params.specialid}?json=true`)
-        console.log(data)
-        this.songs = data.songs.list
-        this.imgUrl = data.info.imgurl
-        this.singerName = data.info.singername
-    },
-}
-</script>
-<style lang="">
-    
-=======
     
     computed: {
         filterImg() {
@@ -97,5 +78,4 @@ export default {
             
         }
     }
->>>>>>> 31f7cb3795f307f9e14a5fd0a8e0a084f8016deb
 </style>
