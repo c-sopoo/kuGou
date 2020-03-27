@@ -5,7 +5,8 @@
             v-for='item in navs'
             :key='item.name'
             :id="item.name"
-            @click.native="gotoFun(item)">{{item.meta.title}}</mt-tab-item>
+            @click.native="gotoFun(item)">
+            {{item.meta.title}}</mt-tab-item>
         </mt-navbar>
     </div>
 </template>

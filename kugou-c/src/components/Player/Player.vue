@@ -7,22 +7,28 @@
         <div class="singer-page" :style="{visibility: flag? 'hidden':'visible','background-image': 'url('+singerPic+')' }">
             <div class="fun-box">
                     <div class="con-group">
-                    <p><span class="iconfont icon-zuo" @click='goBack'></span>{{ flieSongName}}</p>
-                    <!-- 图片 -->
-                    <div class="singer-img">
-                        <img :src="singerPic" alt="">
-                    </div>
-                    <!-- 歌词 -->
-                    <div class="lrc-box">
-                        <p></p>
-                    </div>
+                        <p><span class="iconfont icon-zuo" @click='goBack'></span>{{ flieSongName}}</p>
+                        <!-- 图片 -->
+                        <div class="singer-img">
+                            <img :src="singerPic" alt="">
+                        </div>
+                        <!-- 歌词 -->
+                        <div class="lrc-box">
+                            <!-- <p v-for='(line,i) in currentLyric.lines' :key='i'>{{line.txt}}</p> -->
+                            <p>{{txt}}</p>
+                        </div>
                     <!-- 进度条 -->
                     <div class="progress">
-                        <span>00:00</span>
-                        <div class="progress-wrap">
+                        <span>{{songMin2}}:{{songSec2}}</span>
+                        <div class="progress-wrap" ref='progress'>
                             <div class="load-progress"></div>
-                            <div class="time-progress">
-                                <span></span>
+                            <div class="time-progress" :style="{width:(timeProgressWidth/16)+'rem'}">
+                                <span 
+                                :style="{left:(timeProgressWidth/16-.625)+'rem'}"
+                                @mousedown.prevent='start'
+                                @mousemove.prevent='move'
+                                @mouseup.prevent='end'
+                                ></span>
                             </div>
                         </div>
                         <span>{{songMin}}:{{songSec}}</span>
@@ -61,6 +67,7 @@
 
 import { MessageBox } from 'mint-ui';
 import {mapGetters,mapState}  from 'vuex'
+import Lyric from 'lyric-parser'
 export default {
     data() {
         return {
@@ -74,7 +81,15 @@ export default {
             isPlay: false,
             bottom: '-5rem',
             flag:true,
-            timeLength:''
+            timeLength:'',
+            timeLength2:0,
+            timer1:null,
+            timer2:null,
+            timeProgressWidth:0,
+            lyric:'',
+            currentLyric: null||'',  // 设置一个歌词维护属性
+            currentLineNum: 0,
+            txt:''
         }
     },
     computed: {
@@ -84,7 +99,15 @@ export default {
             return Number.parseInt(this.timeLength/60) 
         },
         songSec() {
-            return Number.parseInt(this.timeLength%60)
+            let seconds = Number.parseInt(this.timeLength%60)
+            return seconds>=10? seconds: '0'+seconds
+        },
+        songMin2() {
+            return Number.parseInt(this.timeLength2/60)
+        },
+        songSec2() {
+            let seconds2 = Number.parseInt(this.timeLength2%60)
+            return seconds2 >=10? seconds2: '0'+seconds2
         }
     },
     watch: {
@@ -96,6 +119,10 @@ export default {
 
     //歌词
     //   http://m.kugou.com/app/i/krc.php?cmd=100&keyword=%E8%96%9B%E4%B9%8B%E8%B0%A6%20-%20%E8%AE%A4%E7%9C%9F%E7%9A%84%E9%9B%AA&hash=10332C58914B9C5FCAAAB60B9531D739&timelength=261000&d=0.4270580353546505
+
+            //清除歌词定时器
+            // debugger
+            
 
             let {data} = await this.$axios.get('api/v1/song/get_song_info',{
                 params:{cmd: 'playInfo',hash: this.hash}})
@@ -133,8 +160,17 @@ export default {
                             timelength:this.timeLength*1000
                         }
                     })
-        
-        console.log(res)
+        this.lyric = res.data
+
+        this.currentLyric = new Lyric(this.lyric,this.handleLyric) //this.handleLyric回调函数
+                console.log(this.currentLyric)
+        if(!this.isPlay) {
+            this.currentLyric.play()
+            console.log('歌词播放中')
+        }else {
+            this.currentLyric.stop()
+            console.log('歌词暂停中')
+        }
         // play() 原生dom元素
         // 虽然你已经把音频信息放置到audio的src中啦 但是音乐需要时间加载
         // 音频还没有加载完毕 你直接调用play无法播放
@@ -142,19 +178,68 @@ export default {
         // console.log('----')
         // console.log(this.$refs.audio)//$refs ref 获取DOM元素
         let this_ = this
-        this.$refs.audio.addEventListener('loadeddata', function() {
-            // console.log(this)
-            console.log('歌曲加载成功')
-            this.play()//audio  play()方法
-            this_.isPlay = true;
-            this_.bottom = '0' 
-        })
+        // let timer = null
+            this.$refs.audio.addEventListener('loadeddata', function() {
+                // console.log(this)
+                console.log('歌曲加载成功')
+                // console.log(this.duration)
+                this.play()//audio  play()方法
+                this_.isPlay = true;
+                this_.bottom = '0' 
+                // this_.timeLength2 = 0;
+                // this_.currentLyric.play()
+                this_.setTimer()
+            })
+            // console.log(this.$refs.progress.offsetWidth)
+            // let s = 
+            this.$refs.audio.addEventListener('timeupdate',function() {
+                this_.timeLength2 = this.currentTime
+                this_.timeProgressWidth = this.currentTime*(this_.$refs.progress.offsetWidth/this.duration)
+                
+            })
 
+        immediate:true
+        deep:true
         }
     },
     methods: {
+        handleLyric({lineNum, txt}){
+            this.currentLineNum = lineNum
+            // console.log(this.currentLineNum)
+            this.txt = txt
+            console.log(txt)
+        },
+        start(ev) {
+            console.log('12134354')
+            
+        },
+        move(ev) {
+            console.log(ev)
+            
+            
+            
+        },
+        end() {
+
+        },
+        setTimer() {
+            // if(this.timer){
+            //     clearInterval(this.timer)
+            // }
+            if(!this.timer1) {
+                this.timer1 = setInterval(()=> {
+                    this.timeLength--
+                    // this.timeLength2++
+                    if(this.timeLength == 0) {
+                        clearInterval(this.timer1)
+                        this.timer1 = null;
+                    }
+                    console.log(this.timeLength)
+                },1000)
+            }
+        },
         pageShow() {
-            console.log(event.target)
+            // console.log(event.target)
             if(event.target.nodeName !== 'SPAN'){
                 this.flag = false
             }
@@ -166,7 +251,7 @@ export default {
             console.log('上一首')
             this.isPlay = false
             this.$refs.audio.pause()
-
+            this.currentLyric.stop()
             if(this.index -1 >=0) {
                 return this.$store.commit('updateHash',{hash: this.songlists[this.index -1].hash})
             }
@@ -175,8 +260,15 @@ export default {
             if(this.isPlay) {//说明在播放
                 console.log('暂停')
                 this.$refs.audio.pause()//点击之后就暂停
+                // this.currentLyric.stop()
+                clearInterval(this.timer1)
+                this.timer1 = null;
+                // this.timeLength2 = 0
             }else {//说明当前是暂停状态
                 this.$refs.audio.play()//点击之后就播放
+                // this.currentLyric.play()
+                this.setTimer()
+                console.log('pppp'+this.timer1)
                 console.log('播放')
             }
             this.isPlay = !this.isPlay
@@ -185,6 +277,7 @@ export default {
             console.log('下一首')
             this.isPlay = false
             this.$refs.audio.pause()
+            this.currentLyric.stop()
             if(this.index+1 <= this.songlists.length) {
                 return this.$store.commit('updateHash',{hash: this.songlists[this.index +1].hash})
             }
@@ -205,10 +298,10 @@ export default {
 }   
 .singer-page {
     width: 100%;
-    height: 33.0625rem;
+    height: 100%;
     background: cornflowerblue;
     position:  fixed;
-    top: 2.4375rem;
+    top: 41px;
     z-index: 10;
     background-size: cover;
     background-repeat: no-repeat;
@@ -235,6 +328,7 @@ export default {
 
     }
     .con-group {
+        width: 100%;
         z-index: 10;
         position: absolute;
     }
@@ -264,19 +358,38 @@ export default {
     .lrc-box {
         height: 3.375rem;
         margin-top: .625rem;
-        background: #fff;
+        // background: #fff;
+        overflow: hidden;
+        p {
+
+        }
     }
     .progress {
         height: 2.5rem;
         padding: .75rem .625rem;
-        background: #000;
+        // background: #000;
         display: flex;
         align-items: center;
         .progress-wrap {
             width: 13.875rem;
             height: .1875rem;
-            margin: 0 .1875rem;
-            background: red;
+            margin: 0 10px;
+            background: rgb(92, 92, 92);
+        }
+        .time-progress {
+            background: #1784d8;
+            height: 100%;
+            position: relative;
+            &>span {
+                display: inline-block;
+                width: .625rem;
+                height: .625rem;
+                border-radius: 50%;
+                background: #1784d8;
+                position: absolute;
+                // top: 0;
+                margin-top: -0.25rem;
+            }
         }
     }
     .control-box {

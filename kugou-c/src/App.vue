@@ -50,7 +50,7 @@ export default {
 <style lang='less' scoped>
   #app{
     // height: 1000px;
-    // background: #fff
+    background: #fff
   }
   .header { 
     position: fixed;

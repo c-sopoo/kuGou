@@ -1,7 +1,7 @@
 <template>
   <div class="rank-cell">
-     <!-- 排行榜中的组件 -->
-     <mt-cell
+    <!-- 排行榜中的组件 -->
+    <mt-cell
         :title="item.specialname|| item.rankname"
         :to="{name:Path,params:{rankid: ($route.path=='/rank')?item.rankid :item.specialid}}"
         is-link
